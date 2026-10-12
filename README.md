@@ -16,8 +16,8 @@ The project is built with **zero external dependencies** using native Node.js.
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/<your-username>/dns-ecommerce-case-study.git
-cd dns-ecommerce-case-study
+git clone https://github.com/vinay85630/E-commerce-DNS-Failure-Case-study-.git
+cd E-commerce-DNS-Failure-Case-study-
 
 # 2. Start the simulator server
 node server.js
@@ -30,20 +30,11 @@ Open your browser at **[http://localhost:3000](http://localhost:3000)**.
 ### Option 2: 1-Click Live Demo on GitHub Pages
 This entire interactive simulator is 100% static-compatible. You can host a free live demo directly on GitHub:
 
-1. Push this repository to GitHub:
-   ```bash
-   git init
-   git add .
-   git commit -m "feat: initial release of DNS case study and live demo"
-   git branch -M main
-   git remote add origin https://github.com/<your-username>/<repo-name>.git
-   git push -u origin main
-   ```
-2. On GitHub, navigate to **Settings** > **Pages**.
-3. Under **Build and deployment** > **Branch**, select `main` branch and `/ (root)` folder.
-4. Click **Save**.
-5. Your live demo will be immediately accessible globally at:  
-   👉 `https://<your-username>.github.io/<repo-name>/`
+1. In this repository on GitHub, navigate to **Settings** > **Pages**.
+2. Under **Build and deployment** > **Branch**, select `main` branch and `/ (root)` folder.
+3. Click **Save**.
+4. Your live demo will be immediately accessible globally at:  
+   👉 **`https://vinay85630.github.io/E-commerce-DNS-Failure-Case-study-/`**
 
 ---
 
