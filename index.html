@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ApexCommerce | DNS Failure Case Study & Live Simulator</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="theme-dark">
+
+  <!-- Top Navigation / Incident Status Banner -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand-logo">
+        <span class="logo-icon">🌐</span>
+        <div>
+          <h1 class="brand-title">ApexCommerce <span class="badge badge-sre">SRE LAB</span></h1>
+          <p class="brand-subtitle">DNS Failure & Resilience Interactive Simulation</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Incident Status Pill -->
+    <div class="header-center">
+      <div id="incident-status-pill" class="status-pill status-healthy">
+        <span class="status-dot"></span>
+        <span id="incident-status-text">SYSTEM HEALTHY (100% RESOLUTION)</span>
+      </div>
+    </div>
+
+    <!-- Quick Financial Impact Ticker -->
+    <div class="header-right">
+      <div class="financial-ticker">
+        <span class="ticker-label">ESTIMATED GMV LOST:</span>
+        <span id="gmv-lost-val" class="ticker-value">$0.00</span>
+      </div>
+      <a href="https://github.com" target="_blank" id="github-link" class="btn btn-outline btn-sm">
+        <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+        </svg>
+        GitHub Ready
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Navigation Tabs -->
+  <nav class="view-tabs">
+    <button class="tab-btn active" data-tab="war-room">
+      <span class="tab-icon">⚡</span> SRE War Room & Network Topology
+    </button>
+    <button class="tab-btn" data-tab="storefront">
+      <span class="tab-icon">🛒</span> Live E-Commerce Storefront
+    </button>
+    <button class="tab-btn" data-tab="case-study">
+      <span class="tab-icon">📑</span> Incident Case Study (RCA & Architecture)
+    </button>
+  </nav>
+
+  <!-- Main Content Viewports -->
+  <main class="main-container">
+
+    <!-- VIEW 1: SRE WAR ROOM & SIMULATOR -->
+    <section id="view-war-room" class="tab-view active">
+      <div class="war-room-grid">
+
+        <!-- Top: Chaos Injection Controls -->
+        <div class="panel chaos-panel">
+          <div class="panel-header">
+            <h2>💥 Chaos Engineering & Incident Scenarios</h2>
+            <span class="tag tag-danger">Simulated Control Plane</span>
+          </div>
+
+          <div class="chaos-scenarios-grid">
+            <button class="scenario-btn" id="btn-normal">
+              <span class="scenario-icon">🟢</span>
+              <div class="scenario-info">
+                <strong>Baseline: Normal Traffic</strong>
+                <p>100% resolution, primary nameservers healthy, cached records valid.</p>
+              </div>
+            </button>
+
+            <button class="scenario-btn danger-hover" id="btn-authoritative-outage">
+              <span class="scenario-icon">🔴</span>
+              <div class="scenario-info">
+                <strong>Scenario A: Authoritative NS Outage</strong>
+                <p>CloudNS Alpha down. Watch TTL count down until global SERVFAIL blackout.</p>
+              </div>
+            </button>
+
+            <button class="scenario-btn warning-hover" id="btn-dnssec-failure">
+              <span class="scenario-icon">⚠️</span>
+              <div class="scenario-info">
+                <strong>Scenario B: DNSSEC Signature Mismatch</strong>
+                <p>Zone signing key corrupted. Validating resolvers (8.8.8.8/1.1.1.1) reject zone.</p>
+              </div>
+            </button>
+
+            <button class="scenario-btn warning-hover" id="btn-coredns-storm">
+              <span class="scenario-icon">🌪️</span>
+              <div class="scenario-info">
+                <strong>Scenario C: Internal CoreDNS Storm</strong>
+                <p>Payment API lookup loops overload Kubernetes CoreDNS, crashing checkout pods.</p>
+              </div>
+            </button>
+
+            <button class="scenario-btn success-hover" id="btn-dual-dns-failover">
+              <span class="scenario-icon">🛡️</span>
+              <div class="scenario-info">
+                <strong>Scenario D: Dual-Provider Failover</strong>
+                <p>Secondary Route 53 Anycast NS activated. Automatic multi-provider recovery.</p>
+              </div>
+            </button>
+
+            <button class="scenario-btn info-hover" id="btn-rfc8767-stale">
+              <span class="scenario-icon">🔄</span>
+              <div class="scenario-info">
+                <strong>Scenario E: RFC 8767 Stale Cache</strong>
+                <p>Resolvers serve expired cached records while revalidating. Resilient fallback.</p>
+              </div>
+            </button>
+          </div>
+
+          <!-- Fine-grained Parameter Tuning -->
+          <div class="tuning-bar">
+            <div class="tuning-item">
+              <label for="ttl-slider">Record TTL: <span id="ttl-val">60s</span></label>
+              <input type="range" id="ttl-slider" min="5" max="300" step="5" value="60">
+            </div>
+            <div class="tuning-item">
+              <label for="traffic-slider">Simulated Traffic: <span id="traffic-val">8,500 RPS</span></label>
+              <input type="range" id="traffic-slider" min="500" max="25000" step="500" value="8500">
+            </div>
+            <div class="tuning-item toggle-group">
+              <label class="switch-label">
+                <input type="checkbox" id="toggle-dual-ns">
+                <span class="switch-slider"></span>
+                Dual-Provider DNS
+              </label>
+            </div>
+            <div class="tuning-item toggle-group">
+              <label class="switch-label">
+                <input type="checkbox" id="toggle-stale-cache">
+                <span class="switch-slider"></span>
+                RFC 8767 Stale Cache
+              </label>
+            </div>
+            <div class="tuning-item toggle-group">
+              <label class="switch-label">
+                <input type="checkbox" id="toggle-coredns-cache">
+                <span class="switch-slider"></span>
+                NodeLocal DNSCache
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Middle: Interactive Animated Topology Diagram -->
+        <div class="panel topology-panel">
+          <div class="panel-header">
+            <h2>🗺️ End-to-End DNS Resolution & E-Commerce Topology</h2>
+            <div class="ttl-tracker-chip">
+              <span>ACTIVE RESOLVER CACHE TTL: </span>
+              <strong id="active-ttl-countdown">60s</strong>
+            </div>
+          </div>
+
+          <div class="topology-canvas-container">
+            <!-- Dynamic SVG Topology -->
+            <svg id="topology-svg" viewBox="0 0 1000 380" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <linearGradient id="grad-healthy" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#10b981" />
+                  <stop offset="100%" stop-color="#047857" />
+                </linearGradient>
+                <linearGradient id="grad-down" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ef4444" />
+                  <stop offset="100%" stop-color="#991b1b" />
+                </linearGradient>
+                <linearGradient id="grad-active-backup" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#06b6d4" />
+                  <stop offset="100%" stop-color="#0284c7" />
+                </linearGradient>
+                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="4" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+              </defs>
+
+              <!-- Connection Lines -->
+              <!-- Client -> Resolver -->
+              <path id="line-client-resolver" class="topo-line" d="M 120 180 L 290 180" />
+              <!-- Resolver -> Primary NS -->
+              <path id="line-resolver-ns1" class="topo-line" d="M 390 160 L 510 90" />
+              <!-- Resolver -> Secondary NS -->
+              <path id="line-resolver-ns2" class="topo-line topo-line-dashed" d="M 390 200 L 510 270" />
+              <!-- Resolver -> CDN Edge -->
+              <path id="line-resolver-cdn" class="topo-line" d="M 390 180 L 670 180" />
+              <!-- CDN -> K8s Gateway -->
+              <path id="line-cdn-k8s" class="topo-line" d="M 770 180 L 850 140" />
+              <!-- K8s -> CoreDNS & Payment -->
+              <path id="line-k8s-payment" class="topo-line" d="M 910 180 L 910 260" />
+
+              <!-- Nodes -->
+              <!-- 1. Client Browser -->
+              <g class="topo-node" id="node-client" transform="translate(60, 140)">
+                <rect width="100" height="80" rx="10" class="node-rect" />
+                <text x="50" y="32" text-anchor="middle" class="node-icon">💻</text>
+                <text x="50" y="52" text-anchor="middle" class="node-title">End Users</text>
+                <text x="50" y="68" text-anchor="middle" class="node-sub">Browsers / Apps</text>
+              </g>
+
+              <!-- 2. Recursive Resolver -->
+              <g class="topo-node" id="node-resolver" transform="translate(290, 130)">
+                <rect width="120" height="100" rx="10" class="node-rect" />
+                <text x="60" y="30" text-anchor="middle" class="node-icon">🌍</text>
+                <text x="60" y="52" text-anchor="middle" class="node-title">Public Resolver</text>
+                <text x="60" y="68" text-anchor="middle" class="node-sub">8.8.8.8 / 1.1.1.1</text>
+                <text x="60" y="86" text-anchor="middle" class="node-badge" id="resolver-cache-status">CACHE: HIT</text>
+              </g>
+
+              <!-- 3. Primary Authoritative NS (CloudNS Alpha) -->
+              <g class="topo-node" id="node-ns1" transform="translate(490, 40)">
+                <rect width="140" height="90" rx="10" class="node-rect" />
+                <text x="70" y="28" text-anchor="middle" class="node-icon">🏢</text>
+                <text x="70" y="48" text-anchor="middle" class="node-title">Primary Authoritative</text>
+                <text x="70" y="64" text-anchor="middle" class="node-sub">CloudNS Alpha Anycast</text>
+                <text x="70" y="80" text-anchor="middle" class="node-status-text" id="ns1-status-text">ONLINE</text>
+              </g>
+
+              <!-- 4. Secondary Authoritative NS (Route 53) -->
+              <g class="topo-node node-inactive" id="node-ns2" transform="translate(490, 230)">
+                <rect width="140" height="90" rx="10" class="node-rect" />
+                <text x="70" y="28" text-anchor="middle" class="node-icon">🛡️</text>
+                <text x="70" y="48" text-anchor="middle" class="node-title">Secondary DNS</text>
+                <text x="70" y="64" text-anchor="middle" class="node-sub">AWS Route 53 Anycast</text>
+                <text x="70" y="80" text-anchor="middle" class="node-status-text" id="ns2-status-text">STANDBY</text>
+              </g>
+
+              <!-- 5. Edge CDN -->
+              <g class="topo-node" id="node-cdn" transform="translate(680, 130)">
+                <rect width="110" height="100" rx="10" class="node-rect" />
+                <text x="55" y="30" text-anchor="middle" class="node-icon">⚡</text>
+                <text x="55" y="52" text-anchor="middle" class="node-title">CDN Edge</text>
+                <text x="55" y="68" text-anchor="middle" class="node-sub">WAF / Static Assets</text>
+                <text x="55" y="86" text-anchor="middle" class="node-badge" id="cdn-status-text">ACTIVE</text>
+              </g>
+
+              <!-- 6. K8s Origin Cluster & CoreDNS -->
+              <g class="topo-node" id="node-k8s" transform="translate(840, 90)">
+                <rect width="130" height="95" rx="10" class="node-rect" />
+                <text x="65" y="28" text-anchor="middle" class="node-icon">☸️</text>
+                <text x="65" y="48" text-anchor="middle" class="node-title">K8s Origin EKS</text>
+                <text x="65" y="64" text-anchor="middle" class="node-sub">Checkout Microservice</text>
+                <text x="65" y="80" text-anchor="middle" class="node-sub" id="k8s-coredns-label">CoreDNS: 100% OK</text>
+              </g>
+
+              <!-- 7. 3rd-Party Payment Gateway -->
+              <g class="topo-node" id="node-payment" transform="translate(840, 240)">
+                <rect width="130" height="85" rx="10" class="node-rect" />
+                <text x="65" y="26" text-anchor="middle" class="node-icon">💳</text>
+                <text x="65" y="46" text-anchor="middle" class="node-title">Payment API</text>
+                <text x="65" y="62" text-anchor="middle" class="node-sub">api.globalpay.net</text>
+                <text x="65" y="76" text-anchor="middle" class="node-status-text" id="payment-dns-status">RESOLVABLE</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Bottom: Real-Time SRE Telemetry & Live DNS Packet Terminal -->
+        <div class="metrics-terminal-row">
+          <!-- Metrics Cards -->
+          <div class="panel metrics-panel">
+            <div class="panel-header">
+              <h3>📊 Telemetry & SLA Metrics</h3>
+            </div>
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <span class="metric-title">RESOLUTION SUCCESS</span>
+                <span class="metric-val" id="metric-success-rate">100.0%</span>
+                <span class="metric-sub" id="metric-rcode">RCODE: NOERROR</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-title">QUERY LATENCY</span>
+                <span class="metric-val" id="metric-latency">18 ms</span>
+                <span class="metric-sub">p99: 34 ms</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-title">GLOBAL INBOUND TRAFFIC</span>
+                <span class="metric-val" id="metric-traffic">8,500 RPS</span>
+                <span class="metric-sub" id="metric-dropped">Dropped: 0 RPS</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-title">CHECKOUT CONVERSIONS</span>
+                <span class="metric-val" id="metric-conversions">248 /min</span>
+                <span class="metric-sub" id="metric-cart-abandon">Cart Drop: 1.4%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Raw DNS Query Inspector Log -->
+          <div class="panel packet-log-panel">
+            <div class="panel-header">
+              <h3>🔍 Live DNS Query Stream (RFC 1035 Packet Inspector)</h3>
+              <button class="btn btn-xs btn-outline" id="btn-clear-log">Clear</button>
+            </div>
+            <div class="packet-terminal" id="packet-log-stream">
+              <!-- Dynamically populated lines -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW 2: LIVE E-COMMERCE STOREFRONT -->
+    <section id="view-storefront" class="tab-view">
+      <div class="storefront-container">
+        
+        <!-- Store Announcement & Live DNS Probe Bar -->
+        <div class="store-dns-bar">
+          <div class="dns-probe-status">
+            <span>BROWSER RESOLUTION STATUS:</span>
+            <code id="browser-dns-probe">apexcommerce.com -> 104.21.45.10 [RESOLVED (NOERROR)]</code>
+          </div>
+          <button class="btn btn-sm btn-outline" id="btn-probe-dns">Re-probe DNS</button>
+        </div>
+
+        <!-- Store Front Header -->
+        <div class="store-hero">
+          <h1>ApexCommerce Flagship Store</h1>
+          <p>Premium Tech Gear • Next-Day Delivery • Instant Checkout</p>
+        </div>
+
+        <!-- Store Error Overlay when DNS is down -->
+        <div id="store-blackout-overlay" class="store-error-screen hidden">
+          <div class="browser-error-box">
+            <div class="error-icon">⚠️</div>
+            <h2>This site can’t be reached</h2>
+            <p><strong>apexcommerce.com</strong>’s server IP address could not be found.</p>
+            <div class="error-code-badge" id="browser-error-code">DNS_PROBE_FINISHED_NXDOMAIN</div>
+            <div class="error-troubleshoot">
+              <p>Try:</p>
+              <ul>
+                <li>Checking the connection</li>
+                <li>Checking the proxy, firewall, and DNS configuration</li>
+                <li>Running Windows Network Diagnostics</li>
+              </ul>
+            </div>
+            <button class="btn btn-primary" id="btn-retry-page">Reload Page</button>
+          </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="product-grid" id="product-grid">
+          <div class="product-card">
+            <div class="product-img">🎧</div>
+            <div class="product-details">
+              <h3>Apex Pro Noise-Cancelling Headphones</h3>
+              <p class="product-price">$349.00</p>
+              <button class="btn btn-primary btn-block btn-buy" data-product="Apex Pro Headphones" data-price="349">
+                Instant Checkout
+              </button>
+            </div>
+          </div>
+
+          <div class="product-card">
+            <div class="product-img">⌚</div>
+            <div class="product-details">
+              <h3>Quantum Chrono Smartwatch Ultra</h3>
+              <p class="product-price">$499.00</p>
+              <button class="btn btn-primary btn-block btn-buy" data-product="Quantum Smartwatch" data-price="499">
+                Instant Checkout
+              </button>
+            </div>
+          </div>
+
+          <div class="product-card">
+            <div class="product-img">💻</div>
+            <div class="product-details">
+              <h3>Apex Ultrabook M3 (32GB, 1TB SSD)</h3>
+              <p class="product-price">$1,899.00</p>
+              <button class="btn btn-primary btn-block btn-buy" data-product="Apex Ultrabook" data-price="1899">
+                Instant Checkout
+              </button>
+            </div>
+          </div>
+
+          <div class="product-card">
+            <div class="product-img">📱</div>
+            <div class="product-details">
+              <h3>Titanium Fold Smartphone 512GB</h3>
+              <p class="product-price">$1,299.00</p>
+              <button class="btn btn-primary btn-block btn-buy" data-product="Titanium Fold" data-price="1299">
+                Instant Checkout
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Checkout Modal -->
+        <div id="checkout-modal" class="modal hidden">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 id="checkout-item-title">Processing Order</h3>
+              <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+              <div class="checkout-steps">
+                <div class="step-line" id="step-dns">1. Resolving checkout.apexcommerce.com...</div>
+                <div class="step-line" id="step-cdn">2. Connecting to Edge CDN Gateway...</div>
+                <div class="step-line" id="step-payment">3. Querying api.globalpay.net (Payment Token)...</div>
+                <div class="step-line" id="step-charge">4. Authorizing $ <span id="checkout-charge-amt">0</span>...</div>
+              </div>
+              <div id="checkout-result-box" class="result-box"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW 3: CASE STUDY & ARCHITECTURE GUIDE -->
+    <section id="view-case-study" class="tab-view">
+      <div class="case-study-container">
+        <article class="case-study-doc">
+          <header class="doc-header">
+            <span class="tag tag-danger">SRE INCIDENT POST-MORTEM</span>
+            <h1>Anatomy of a $2.8M DNS Blackout in Tier-1 E-Commerce</h1>
+            <p class="doc-meta">Published by Reliability Architecture Team • Root Cause Analysis & Production Hardening Guide</p>
+          </header>
+
+          <section class="doc-section">
+            <h2>1. Incident Summary</h2>
+            <p>During peak holiday readiness testing, <strong>ApexCommerce</strong> suffered a total global resolution blackout lasting <strong>167 minutes</strong>. Despite origin compute (Kubernetes pods, AWS ALBs, Amazon RDS Aurora) operating with 0% dropped packets and 1.2% CPU utilization, over <strong>4.2 million active shoppers</strong> were greeted with <code>ERR_NAME_NOT_RESOLVED</code>.</p>
+            
+            <div class="callout callout-danger">
+              <strong>Key Financial Damage:</strong>
+              <ul>
+                <li><strong>Direct Lost GMV:</strong> $2,899,120 (167 minutes @ average $17,360/minute)</li>
+                <li><strong>Wasted Ad Spend:</strong> $142,500 on active Google/Meta ads landing on unresolvable URLs</li>
+                <li><strong>Customer Support Inundation:</strong> 18,400 tickets and automated shopping bot disconnects</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="doc-section">
+            <h2>2. The Three Cascading Failure Planes</h2>
+            
+            <div class="failure-plane-card">
+              <h3>Plane 1: The Single-Provider Anycast Fallacy</h3>
+              <p>ApexCommerce relied exclusively on a single Anycast authoritative DNS vendor. While Anycast provides physical network resilience against DDoS attacks on individual points-of-presence, all 300+ edge nodes shared a <strong>single software control plane</strong>. When a corrupted zone signing script was deployed, every nameserver on Earth invalidated signatures concurrently.</p>
+            </div>
+
+            <div class="failure-plane-card">
+              <h3>Plane 2: The "TTL Trap"</h3>
+              <p>To enable rapid multi-region failover, SREs configured record TTL to <strong>60 seconds</strong>. When the authoritative nameservers crashed, recursive resolvers around the world purged their cache within 1 minute. Had records been configured with an emergency TTL buffer or had resolvers implemented <strong>RFC 8767 (Serving Stale Data)</strong>, 80%+ of user traffic would have continued flowing uninterrupted.</p>
+            </div>
+
+            <div class="failure-plane-card">
+              <h3>Plane 3: The Internal CoreDNS "Thundering Herd"</h3>
+              <p>Outside DNS failure leaked into the internal Kubernetes cluster. When backend checkout pods attempted to resolve the external payment gateway (<code>api.globalpay.net</code>), lookups failed. Aggressive, un-jittered retries flooded Kubernetes CoreDNS pods, pushing CoreDNS CPU to 100% and breaking internal service discovery (<code>cart-service.default.svc.cluster.local</code>).</p>
+            </div>
+          </section>
+
+          <section class="doc-section">
+            <h2>3. Production Hardening: The 5-Pillar Architecture</h2>
+            <div class="architecture-pillars">
+              <div class="pillar-box">
+                <h4>1. Multi-Provider Anycast DNS</h4>
+                <p>Delegate 2 NS records to Provider A (AWS Route 53) and 2 NS records to Provider B (Cloudflare). Synchronize records using GitOps via OctoDNS.</p>
+              </div>
+              <div class="pillar-box">
+                <h4>2. RFC 8767 Stale Cache Serving</h4>
+                <p>Configure resolvers and clients to return stale cached records when authoritative nameservers return SERVFAIL or timeout.</p>
+              </div>
+              <div class="pillar-box">
+                <h4>3. Kubernetes NodeLocal DNSCache</h4>
+                <p>Deploy node-local caching DaemonSets to intercept pod lookups, preventing CoreDNS query amplification storms.</p>
+              </div>
+              <div class="pillar-box">
+                <h4>4. Multi-Region Synthetic Probing</h4>
+                <p>Continuously validate RRSIG expiration and authoritative response times from 60+ global vantage points.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="doc-section">
+            <h2>4. Source Code & Complete Post-Mortem Document</h2>
+            <p>Read the complete Markdown document in this repository: <a href="file:///C:/Users/vinay/.gemini/antigravity/scratch/dns-ecommerce-case-study/DNS_FAILURE_CASE_STUDY.md"><code>DNS_FAILURE_CASE_STUDY.md</code></a></p>
+          </section>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Audio feedback / effects (synthesized via Web Audio API) -->
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "dns-failure-ecommerce-simulator",
+  "version": "1.0.0",
+  "description": "Interactive DNS Failure Simulation and SRE War Room for an E-Commerce Platform Case Study",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "dns",
+    "sre",
+    "chaos-engineering",
+    "ecommerce",
+    "dnssec",
+    "coredns",
+    "high-availability",
+    "case-study"
+  ],
+  "author": "Antigravity Engineering",
+  "license": "MIT"
+}
